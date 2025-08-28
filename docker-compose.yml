@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Our Spring Boot Application Service
+  app:
+    build: .
+    # Using the Dockerfile in the current directory (where docker-compose.yml is)
+    ports:
+      - "8080:8080"
+    environment:
+      # These environment variables override application.properties for DB connection
+      # Ensure they match the settings in application.properties if you're not overriding
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campaignprojectdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Auto-create/update tables
+    depends_on:
+      - db # Ensure the 'db' service starts before 'app'
+    networks:
+      - ad-network
+
+  # PostgreSQL Database Service
+  db:
+    image: postgres:13-alpine # Use a lightweight PostgreSQL image
+    environment:
+      POSTGRES_DB: campaignprojectdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432" # Expose DB port for optional external access (e.g., DBeaver)
+    volumes:
+      - db-data:/var/lib/postgresql/data # Persistent data volume
+    networks:
+      - ad-network
+
+# Define networks
+networks:
+  ad-network:
+    driver: bridge
+
+# Define volumes
+volumes:
+  db-data: # This volume will store our PostgreSQL data persistently
