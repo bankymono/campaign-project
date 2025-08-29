@@ -27,6 +27,15 @@ public class AdCreative {
     private String filePath;
     private LocalDateTime uploadDate;
 
+    public AdCreative(String fileName, String originalFileName, String contentType, Long size, String filePath) {
+        this.fileName = fileName;
+        this.originalFileName = originalFileName;
+        this.contentType = contentType;
+        this.size = size;
+        this.filePath = filePath;
+        this.uploadDate = LocalDateTime.now();
+    }
+
     // Relationship to Campaign (optional for now, but good to think ahead)
     // @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "campaign_id")
