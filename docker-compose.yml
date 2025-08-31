@@ -42,6 +42,8 @@ services:
       - db
     ports:
       - "8085:8080"
+    networks:
+      - ad-network
 
 # Define networks
 networks:
