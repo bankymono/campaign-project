@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/creatives")
+@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 public class AdCreativeController {
     @Autowired
     private FileStorageService fileStorageService;
@@ -31,6 +33,7 @@ public class AdCreativeController {
     private AdCreativeRepository adCreativeRepository;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<AdCreative> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String fileName = fileStorageService.storeFile(file);
@@ -84,5 +87,16 @@ public class AdCreativeController {
     @GetMapping
     public List<AdCreative> getAllCreatives() {
         return adCreativeRepository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')") // NEW: Only MODERATOR and ADMIN can delete creatives
+    public ResponseEntity<HttpStatus> deleteCreative(@PathVariable Long id) {
+        if (adCreativeRepository.existsById(id)) {
+            adCreativeRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
