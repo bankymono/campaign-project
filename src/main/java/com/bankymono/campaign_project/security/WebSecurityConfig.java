@@ -69,7 +69,7 @@ public class WebSecurityConfig {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // Optional: If you are using H2 console and facing issues with frames.
-        // http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         return http.build();
     }
